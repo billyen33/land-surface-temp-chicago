@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Land Surface Temperature Chicago</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+  h2 {
+    margin: 20px;
+    font-size: 1.2em;
+  }
+  h4 {
+    margin: 20px;
+    font-size: 1.2em;
+  }
+
+  h3 {
+    margin: 10px;
+    font-size: 1em;
+  }
+
+  p {
+    font-size: 0.85em;
+    margin: 20px;
+    text-align: left;
+  }
+  p2 {
+    font-size: 0.85em;
+    line-height: 3.5em;
+    margin: 10px;
+    text-align: left;
+  }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  /**
+  * Set rules for how the map overlays
+  * (information box and legend) will be displayed
+  * on the page. */
+  .map-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.8);
+    margin-right: 10px;
+    margin-left: 10px;
+    font-family: Arial, sans-serif;
+    overflow: auto;
+    border-radius: 3px;
+  }
+
+  #features {
+    top: 0;
+    height: 266px;
+    margin-top: 20px;
+    margin-left: 20px;
+    width: 350px;
+  }
+
+  #legend {
+    padding: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    line-height: 18px;
+    height: 150px;
+    margin-bottom: 40px;
+    width: 180px;
+  }
+
+  .legend-key {
+    display: inline-block;
+    border-radius: 20%;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+  }
+</style>
+</head>
+<body>
+<style>
+.marker {
+display: block;
+border: none;
+border-radius: 50%;
+cursor: pointer;
+padding: 0;
+}
+</style>
+ 
+<div id="map"></div>
+<div class="map-overlay" id="features"><h2>Land Surface Temperature Chicago (8/21/20)</h2><div id="pd">
+  <p>Credit: <a href="http://billyen33.com/">Bill Yen</a>
+  </p>
+  <p>
+    As a part of the GIS hackathon hosted by Earth Hacks, NASA Jet Propulsion Laboratory, and Urban Canopy, I created an interactive web map of the heat island effect in Chicago during a hot summer day in August within just 24 hours.
+  </p>
+  <p>This map displays the heat island effect in the City of Chicago during a summer afternoon using <a href="https://ecostress.jpl.nasa.gov/">NASA ECOSTRESS</a> thermal imaging data.
+    It also highlights the top ten hottest and coolest properties in different regions of the city.
+    The redder a section of the map is, the warmer the land surface temperature. Click on markers to see more information about the sites.
+  <p>The GIS mapping of this project was done using <a href="https://qgis.org/en/site/">QGIS</a> with the support of <a href="https://www.earthhacks.io/">Earth Hacks</a>, <a href="https://www.jpl.nasa.gov/">NASA JPL</a>, and <a href="http://urbancanopy.io/earthhacks">Urban Canopy</a>, and this page was created using HTML, CSS, 
+    and the <a href="https://docs.mapbox.com/mapbox-gl-js/api/">Mapbox GL JS</a> API.
+  </p></p></div></div>
+  <div class="map-overlay" id="legend"><h3>Legend</h3><img src="https://cdn.glitch.com/2f5c481e-b8c7-4c31-95a4-3de77eb012a7%2Fhot_face.svg?1603231971511" alt="Hot face" width="25" height="25" ><p2>= Hottest Properties</p2>
+    <img src="https://cdn.glitch.com/2f5c481e-b8c7-4c31-95a4-3de77eb012a7%2Fthumbnails%2Fblue_face.svg?1603234030789" alt="Cool face" width="25" height="25" ><p2>= Coolest Properties</p2></div>
+ 
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYmlsbHllbjMzIiwiYSI6ImNrZ2QydXZwbDBzankycXFva2h5dnI4M2IifQ._eTybzcdTG69pXAuPD3WCg';
+var geojson = {
+'type': 'FeatureCollection',
+'features': [
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?v=1603237773998',
+'title': '53.2 C',
+'description': 'Location is a house which is next to other houses, a factory/warehouse (Maruichi Leavitt??), parking lot (asphalt?), and railroad track'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6649495, 41.6849901]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '52.4 C',
+'description': 'House near South Davol St House, next to parking lot, house sits on a small open lot, storage garages on lot?'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6953132, 41.7558975]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '55.3 C',
+'description': 'Between Monument of Faith and Shipping Container Storage'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.688975, 41.8600894]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '51.2 C',
+'description': 'Small outlet mall/shopping center; near a large Planet Fitness and lots of parking lot'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.749628, 41.909215]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '51.1 C',
+'description': 'partments (?); next to auto shop'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.710548, 41.8082329]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '50.9 C',
+'description': 'Series of warehouses, next to Consulate General of Guatemala'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.7625935, 41.9833155]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '50.8 C',
+'description': 'Across from LA Fitness; small business or resturant?; parking lot around building'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6631292, 41.6850968]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '50.8 C',
+'description': 'Next to houses and an employee parking lot, across the street from a warehouse'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.7112474, 41.8086787]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '49.2 C',
+'description': 'Surrounded by lots of houses (suburban neighborhood), across from Light House Chapel International'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.7733346, 41.9182393]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fhot_face.svg?v=1603232939844',
+'title': '52.2 C',
+'description': 'Factory, Ambrose Plamadon School'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.688975, 41.8600894]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31.3 C',
+'description': 'Medium sized aparment/condo building, next to North Shore Beach Park'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6579475, 42.0040255]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31.3 C',
+'description': 'Fair sized apartment complex, next to tennis courts, off coast; some tree coverage'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6643078, 42.0205155]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31.3 C',
+'description': 'Beachside property'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6547586, 41.9887632]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31.2 C',
+'description': 'Between two beach parks, small apartment/condo'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6582598, 42.0040022]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31.1 C',
+'description': 'Few houses with many trees in between houses, off Little Camulet River; parks, housing, and library around'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6030544, 41.6503305]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31.1 C',
+'description': 'Kindred Chicago Lakeshore, next to high rises and parking lots'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.654528, 41.992751]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31 C',
+'description': 'Between two beach parks, small apartment/condo'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6578712, 42.0044051]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '31 C',
+'description': 'Off the coast, high rise apartmebts, next to Sullivan Center for Student Studies'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.654966, 41.9967375]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '30.8 C',
+'description': 'Off the coast, multi-floor building (looks like apartments), next to a park, similar buildings around it'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6634311, 42.016733]
+}
+},
+{
+'type': 'Feature',
+'properties': {
+'iconSize': [30, 30],
+'url': 'https://cdn.glitch.com/bb2af1ae-e258-4e43-971d-825827909470%2Fblue_face.svg?1603237773998',
+'title': '30.4 C',
+'description': 'On the coast, Adler Planetarium, some green space around it, not crowded by buildings'
+},
+'geometry': {
+'type': 'Point',
+'coordinates': [-87.6066033, 41.8663636]
+}
+}
+]
+};
+ 
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/billyen33/ckgfie3xz0xdy19pc2ql4akq7',
+center: [-87.99, 41.8],
+zoom: 9.4
+});
+ 
+// add markers to map
+geojson.features.forEach(function (marker) {
+// create a DOM element for the marker
+var el = document.createElement('div');
+el.className = 'marker';
+el.style.backgroundImage = 'url(' + marker.properties.url + ')';
+el.style.width = marker.properties.iconSize[0] + 'px';
+el.style.height = marker.properties.iconSize[1] + 'px';
+el.style.background.size = 'cover';
+el.style.border.radius = '50%';
+el.style.cursor = 'pointer';
+ 
+//el.addEventListener('click', function () {
+//window.alert(marker.properties.message);
+//});
+ 
+// add marker to map
+new mapboxgl.Marker(el)
+.setLngLat(marker.geometry.coordinates)
+.setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+  .setHTML('<h4>' + marker.properties.title + '</h4><p>' + marker.properties.description + '</p>'))
+.addTo(map);
+});
+</script>
+ 
+</body>
+</html>
